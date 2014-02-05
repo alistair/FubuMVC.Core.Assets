@@ -2,6 +2,7 @@ using System;
 using Bottles.Diagnostics;
 using FubuCore;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FubuMVC.Core.Assets.Files
 {
@@ -56,8 +57,9 @@ namespace FubuMVC.Core.Assets.Files
 
         public void ReadAssetType(PackageAssetDirectory directory, string contentFolder, AssetFolder assetFolder)
         {
-            var specificFolder = contentFolder.AppendPath(assetFolder.ToString());
-            if (_system.DirectoryExists(specificFolder))
+            var specificFolder = _system.ChildDirectoriesFor(contentFolder).FirstOrDefault(x => x.EndsWith(assetFolder.ToString(), StringComparison.InvariantCultureIgnoreCase));
+
+            if (specificFolder.IsNotEmpty())
             {
                 _log.Trace(LoadingAssetTypeForPackageAt.ToFormat(specificFolder));
                 var builder = new AssetFileBuilder(_registration, specificFolder, directory, assetFolder);
